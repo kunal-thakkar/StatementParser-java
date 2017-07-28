@@ -96,7 +96,7 @@ public class UI extends JPanel implements ActionListener {
         frame.setVisible(true);
     }
     
-	public static void main(String[] a){
+	public static void main(String[] a) throws InvalidPasswordException, FileNotFoundException, IOException{
 		SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 //Turn off metal's use of bold fonts
@@ -119,20 +119,12 @@ public class UI extends JPanel implements ActionListener {
             log.setCaretPosition(log.getDocument().getLength()); 
         //Handle save button action.
         } else if (e.getSource() == saveButton) {
-        	try {
-				Parser.parseStatements(statements, password.getText(), (Parser.StatementTypes)statementList.getSelectedItem(), new Parser.Logger() {
-					@Override
-					public void log(String str) {
-						log.append(str + newline);
-					}
-				});
-			} catch (InvalidPasswordException e1) {
-				e1.printStackTrace();
-			} catch (FileNotFoundException e1) {
-				e1.printStackTrace();
-			} catch (IOException e1) {
-				e1.printStackTrace();
-			}
+        	Parser.parseStatements(statements, password.getText(), (Parser.StatementTypes)statementList.getSelectedItem(), new Parser.Logger() {
+				@Override
+				public void log(String str) {
+					log.append(str + newline);
+				}
+			});
         }
 	}
 

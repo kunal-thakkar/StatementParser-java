@@ -1,8 +1,9 @@
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
@@ -11,40 +12,80 @@ import org.apache.pdfbox.text.PDFTextStripper;
 public class Parser {
 	
 	public enum StatementTypes {
-		HDFC, CITI, SBI, ICICI
+		HDFC, CITI, SBI, ICICI, StandardChartered
 	}
 	
 	interface Logger {
 		void log(String str);
 	}
 
-	public static void parseStatements(File[] list, String password, StatementTypes type, Logger logger) throws InvalidPasswordException, FileNotFoundException, IOException{
+	public static void parseStatements(File[] list, String password, StatementTypes type, Logger logger) {
 		for(int i = 0; i < list.length; i++){
-	        switch (type) {
-	        case ICICI:
-				parseIciciStatement(
-					PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
-				);
-	        	break;
-			case CITI:	//CITI
-				parseCitiStatement(
-					PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
-				);
-				break;
-			case HDFC:	//HDFC
-				parseHdfcStatement(
-					PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
-				);
-				break;
-			case SBI: //SBI
-				parseSbiStatement(
-					PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
-				);
-				break;
-			default:
-				break;
+	        try {
+				switch (type) {
+				case StandardChartered:
+					parseScStatement(
+						PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
+					);
+					break;
+				case ICICI:
+					parseIciciStatement(
+						PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
+					);
+					break;
+				case CITI:	//CITI
+					parseCitiStatement(
+						PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
+					);
+					break;
+				case HDFC:	//HDFC
+					parseHdfcStatement(
+						PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
+					);
+					break;
+				case SBI: //SBI
+					parseSbiStatement(
+						PDDocument.load(new BufferedInputStream(new FileInputStream(list[i])), password), logger
+					);
+					break;
+				default:
+					break;
+				}
+			} catch (Exception e) {
+				StringWriter sw = new StringWriter();
+				e.printStackTrace(new PrintWriter(sw));
+				logger.log(sw.toString());
 			}
 		}
+	}
+
+	private static void parseScStatement(PDDocument pdf, Logger logger) throws InvalidPasswordException, IOException{
+        PDFTextStripper reader = new PDFTextStripper();
+        String pageText = reader.getText(pdf);
+        String[] lines = pageText.split("\r\n"), linePart;
+        String desc, line;
+        int len;
+        for(int i = 0; i < lines.length; i++){
+        	line = lines[i];
+        	if(line.length() > 30 && line.matches(".*\\d{1,15}\\.\\d{2}(CR)?\\d{6}.*")){
+        		line = line.substring(28).trim();
+        		linePart = line.split(" ");
+        		desc = "";
+        		len = linePart.length;
+        		desc = linePart[1];
+        		for(int c = 2; c < len; c++){
+        			if(linePart[c].length() != 0)
+        			desc += " " + linePart[c];
+        		}
+        		linePart[0] = linePart[0].replaceAll(",", "");
+        		len = linePart[0].length();
+        		logger.log(String.format("20%s-%s-%s,%s,%s", 
+        				linePart[0].substring(len-2, len), 
+        				linePart[0].substring(len-4, len-2), 
+        				linePart[0].substring(len-6, len-4), desc.replaceAll(",", " "), linePart[0].substring(0, len-6)));
+        	}
+        }
+        pdf.close();
 	}
 
 	private static void parseIciciStatement(PDDocument pdf, Logger logger) throws InvalidPasswordException, IOException{
@@ -187,7 +228,7 @@ public class Parser {
         			if(linePart[c].length() != 0)
         			desc += " " + linePart[c];
         		}
-        		logger.log(String.format("%s-%s-%s\t%s\t%s", datePart[2], datePart[1], datePart[0], desc.replaceAll(",", " "), linePart[len-1].replaceAll(",", "")));
+        		logger.log(String.format("%s-%s-%s,%s,%s", datePart[2], datePart[1], datePart[0], desc.replaceAll(",", " "), linePart[len-1].replaceAll(",", "")));
         	}
         }
         pdf.close();
@@ -211,7 +252,7 @@ public class Parser {
         			if(linePart[c].length() != 0)
         			desc += " " + linePart[c];
         		}
-        		logger.log(String.format("20%d-%s-%s\t%s\t%s", year, datePart[1], datePart[0], desc, linePart[len-1]));
+        		logger.log(String.format("20%d-%s-%s,%s,%s", year, datePart[1], datePart[0], desc, linePart[len-1]));
         	}
         	else if(lines[i].matches("^\\d{2}/\\d{2}/\\d{2}.*$")){
         		year = Integer.parseInt(lines[i].split("/")[2].trim());
