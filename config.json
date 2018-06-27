@@ -1,0 +1,59 @@
+{
+	"rules": [{
+			"subject": "Statement Online - CITI CASH BACK TITANIUM CARD",
+			"file_name": "CITI CASH BACK TITANIUM CARD.pdf",
+			"password": "KUNA16APR",
+			"statement_type": "CITI"
+		}, {
+			"subject": "^.*.(Your Credit Card Statement for the period).*.( to ).*",
+			"file_name": "4477 XXXX XXXX 0002-[0-9]{0,10}.pdf",
+			"password": "kuna1604",
+			"statement_type": "ICICI"
+		}, {
+			"subject": "^.*.(Your eStatement for ).*.( is now available. Ref:<).*.(>)",
+			"file_name": "eStatement6048IN_[0-9]{4}-[0-9]{2}-[0-9]{2}_[0-9]{2}:[0-9]{2}.pdf",
+			"password": "KUNA160486",
+			"statement_type": "StandardChartered"
+		}, {
+			"subject": "^.*.(Your SBI Card Monthly Statement -).*",
+			"file_name": "5264685420147702_[0-9]{8}.pdf",
+			"password": "5264685424183125",
+			"statement_type": "SBI"
+		}, {
+			"subject": "^.*.(Your HDFC Bank Regalia MasterCard Credit Card Statement).*.-[0-9]{4}",
+			"file_name": "5522XXXXXXXXXX32_[0-9]{2}-[0-9]{2}-[0-9]{4}.PDF",
+			"password": "KUNA4932",
+			"statement_type": "HDFC"
+		}, {
+			"subject": "^.*.(Your HDFC Bank MoneyBack MasterCard Credit Card Statement).*.-[0-9]{4}",
+			"file_name": "5459XXXXXXXXXX36_[0-9]{2}-[0-9]{2}-[0-9]{4}.PDF",
+			"password": "KUNA9336",
+			"statement_type": "HDFC"
+		}, {
+			"subject": "^.*.(Your HDFC Bank Platinum Plus MasterCard Credit Card Statement).*.-[0-9]{4}",
+			"file_name": "5243XXXX0048XXXX_[0-9]{2}-[0-9]{2}-[0-9]{4}.PDF",
+			"password": "KUNA7139",
+			"statement_type": "HDFC"
+		}
+	],
+	"gmail_account":{
+		"host":"imap.googlemail.com",
+		"username":"kunalmthakkar@gmail.com",
+		"password":"syufnvvwcgaqeyow",
+		"folders":["Citi Bank","Citi Bank/Transaction Alert", "HDFC Bank", "ICICI Bank Statements", 
+			"ICICI Credit Card", "INBOX", "SBI Card", "Standard Chartered"]
+	},
+	"mail_account":{
+		"host":"52.66.72.94",
+		"username":"admin@krishnaconsultancy.co.in",
+     	"password":"admin@krishnaconsultancy",
+     	"folders":["INBOX"]
+	},
+	"mysql":{
+		"host":"localhost",
+		"port":3306,
+		"database":"expense_manager",
+		"username":"root",
+		"password":""
+	}
+}

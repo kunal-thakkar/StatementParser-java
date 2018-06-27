@@ -1,5 +1,7 @@
 *.class
 *.jar
+*.pdf
+*.csv
 bin/
 lib/
 data/

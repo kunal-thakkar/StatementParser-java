@@ -22,6 +22,9 @@ import javax.swing.UIManager;
 
 import org.apache.pdfbox.pdmodel.encryption.InvalidPasswordException;
 
+import in.co.krishnaconsultancy.expence_tracker.Entries;
+import in.co.krishnaconsultancy.expence_tracker.Parser;
+
 public class UI extends JPanel implements ActionListener {
 	
 	private static final long serialVersionUID = 6784806604790776756L;
@@ -121,8 +124,8 @@ public class UI extends JPanel implements ActionListener {
         } else if (e.getSource() == saveButton) {
         	Parser.parseStatements(statements, password.getText(), (Parser.StatementTypes)statementList.getSelectedItem(), new Parser.Logger() {
 				@Override
-				public void log(String str) {
-					log.append(str + newline);
+				public void log(Entries entry) {
+					log.append(entry.toString() + newline);
 				}
 			});
         }
